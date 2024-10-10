@@ -1,4 +1,5 @@
 import requests
+import os
 # the send_query function is taken from the ecallen package
 def send_query(query_base,spec_id,args):
     response = requests.get(query_base.format(spec_id),params=args)
@@ -25,4 +26,15 @@ def filter_metadata(metadata, column_name, filter_value):
     return metadata
 
 def get_section_ids(experiment_id):
-    json_tree = send_query("http://api.brain-map.org/api/v2/data/SectionDataSet/{}.json",brainID,{"include":"equalization,section_images"})
+    response = send_query("http://api.brain-map.org/api/v2/data/SectionDataSet/{}.json",experiment_id,{"include":"equalization,section_images"})
+    response = response['msg']
+    section_images = response[0]['section_images']
+    section_images = [i for i in section_images if i is not None]
+    return section_images
+
+
+def make_experiment_folder(output_dir, animal_name, experiment_id):
+    output_path = os.path.join(output_dir, animal_name, str(experiment_id))
+    os.makedirs(os.path.join(output_path, '10um'), exist_ok=True)
+    os.makedirs(os.path.join(output_path, '25um'), exist_ok=True)
+    os.makedirs(os.path.join(output_path, 'expression'), exist_ok=True)
