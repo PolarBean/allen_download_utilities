@@ -1,24 +1,36 @@
 import pandas as pd
-from utilities.download_utilities import send_query, filter_metadata
+from utilities.download_utilities import filter_metadata
+import os 
 
-ANIMAL_ID = "ALL"
-ANIMAL_NAME = "ALL"
-EXPERIMENT_ID = "ALL"
-SEX = "ALL"
-GENE = "ALL"
-AGE = "ALL"
-PLANE_OF_SECTION = "ALL"
+# Filter criteria
+FILTER_CRITERIA = {
+    "animal_id": "ALL",
+    "animal_name": "ALL",
+    "experiment_id": "ALL",
+    "sex": "ALL",
+    "gene": "Calb1",
+    "age": ['P4', 'P14', 'P28'],
+    "plane_of_section": "coronal",
+    "sleep_state": "Nothing",
+    "probe_orientation": ["Nothing", "2"]
+}
+
+
+def make_experiment_folder(target_path, animal_name, experiment_id):
+    output_path = os.path.join(target_path, animal_name, str(experiment_id))
+    os.makedirs(os.path.join(output_path, '10um', exist_ok=True))
+    os.makedirs(os.path.join(output_path, '25um', exist_ok=True))
+    os.makedirs(os.path.join(output_path, 'expression', exist_ok=True))
 
 metadata = pd.read_csv(r"metadata/allen_ISH.csv")
 if len(metadata) == 0:
     raise ValueError("Empty metadata file")
 
 # Apply filters
-metadata = filter_metadata(metadata, "animal_id", ANIMAL_ID)
-metadata = filter_metadata(metadata, "animal_name", ANIMAL_NAME)
-metadata = filter_metadata(metadata, "experiment_id", EXPERIMENT_ID)
-metadata = filter_metadata(metadata, "sex", SEX)
-metadata = filter_metadata(metadata, "gene", GENE)
-metadata = filter_metadata(metadata, "age", AGE)
-metadata = filter_metadata(metadata, "plane_of_section", PLANE_OF_SECTION)
+for key, value in FILTER_CRITERIA.items():
+    metadata = filter_metadata(metadata, key, value)
+
+for index, row in metadata.iterrows():
+    make_experiment_folder('downloaded_data', row['animal_name'], row['experiment_id'])
+    
 

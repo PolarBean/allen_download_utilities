@@ -23,3 +23,6 @@ def filter_metadata(metadata, column_name, filter_value):
         if len(metadata) == 0:
             raise ValueError(f"No data found with the specified {column_name.upper()}(S)")
     return metadata
+
+def get_section_ids(experiment_id):
+    json_tree = send_query("http://api.brain-map.org/api/v2/data/SectionDataSet/{}.json",brainID,{"include":"equalization,section_images"})
