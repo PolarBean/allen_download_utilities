@@ -1,16 +1,26 @@
 import requests
 import pandas as pd
-from tqdm import tqdm
+from utilities.api_utilities import fetch_data
+
+"""
+This requests only 
+#This was removed ## coronal data (plane_of_section eq 1)
+non transgenic mice only (specimen(donor[transgenic_mouse_id$eqnull]))
+Black 6 only (specimen(donor[strain$eq%27C57BL/6J%27]))
+ISH data only (treatments[name$eq%27ISH%27])
+AntiSense probes only (probes[orientation_id$eq%272%27])
+"""
 
 
-REQUEST_STR = "https://mouse.brain-map.org/api/v2/data/query.json?criteria=model::SectionDataSet,rma::criteria,[plane_of_section_id$eq1],specimen(donor[strain$eq%27C57BL/6J%27]),treatments[name$eq'ISH'],probes[orientation_id$eq%272%27]&include=plane_of_section,genes,treatments,specimen(donor(age))&num_rows=all"
+BASE_URL = "https://mouse.brain-map.org/api/v2/data/query.json"
+CRITERIA = "criteria=model::SectionDataSet,rma::criteria,specimen(donor[transgenic_mouse_id$eqnull]),specimen(donor[strain$eq%27C57BL/6J%27]),treatments[name$eq%27ISH%27],probes[orientation_id$eq%272%27]&include=plane_of_section,genes,treatments,specimen(donor(age))"
+NUM_ROWS = 500
 
-api_data = requests.get(REQUEST_STR)
 
-api_data.status_code
-api_data = api_data.json()["msg"]
+data = fetch_data(BASE_URL, CRITERIA, NUM_ROWS)
+
 data = {
-    "animal_id_API":[],
+    "animal_id":[],
     "animal_name":[],
     "experiment_id":[],
     "sex":[],
@@ -18,10 +28,9 @@ data = {
     "age":[],
     "plane_of_section":[],
     "treatment":[],
-    "gene":[]
 }
 
-for row in tqdm(api_data):
+for row in api_data:
     animal_id_API = row['specimen_id']
     animal_name = row['specimen']['name']
     experiment_id = row['id']
@@ -34,7 +43,7 @@ for row in tqdm(api_data):
         raise Exception("more than one gene")
     treatment = row["treatments"][0]["name"]
     gene = row['genes'][0]['acronym']
-    data["animal_id_API"].append(animal_id_API)
+    data["animal_id"].append(animal_id_API)
     data["experiment_id"].append(experiment_id)
     data["sex"].append(sex)
     data["age"].append(age)
@@ -44,8 +53,6 @@ for row in tqdm(api_data):
     data["treatment"].append(treatment)
 
 
-for k in data.keys():
-    print(k, len(data[k]))
 # Convert to DataFrame for further processing
 df = pd.DataFrame(data)
-display(df.head())
+df.to_csv('metadata/allen_ISH.csv')
