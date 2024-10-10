@@ -15,12 +15,11 @@ FILTER_CRITERIA = {
     "probe_orientation": ["Nothing", "2"]
 }
 
-
 def make_experiment_folder(target_path, animal_name, experiment_id):
     output_path = os.path.join(target_path, animal_name, str(experiment_id))
-    os.makedirs(os.path.join(output_path, '10um', exist_ok=True))
-    os.makedirs(os.path.join(output_path, '25um', exist_ok=True))
-    os.makedirs(os.path.join(output_path, 'expression', exist_ok=True))
+    os.makedirs(os.path.join(output_path, '10um'), exist_ok=True)
+    os.makedirs(os.path.join(output_path, '25um'), exist_ok=True)
+    os.makedirs(os.path.join(output_path, 'expression'), exist_ok=True)
 
 metadata = pd.read_csv(r"metadata/allen_ISH.csv")
 if len(metadata) == 0:
