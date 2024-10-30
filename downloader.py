@@ -26,7 +26,6 @@ for key, value in FILTER_CRITERIA.items():
 for index, row in metadata.iterrows():
     make_experiment_folder('downloaded_data', row['animal_name'], row['experiment_id'])
     section_images = get_section_ids(row['experiment_id'])
-
     for section_image in section_images:
         download_image('downloaded_data', row['animal_name'], row['experiment_id'], section_image['id'], section_image['section_number'], view='expression')
         download_image('downloaded_data', row['animal_name'], row['experiment_id'], section_image['id'], section_image['section_number'], resolution=section_image['resolution'])
