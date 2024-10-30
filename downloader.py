@@ -20,6 +20,7 @@ FILTER_CRITERIA = {
     "probe_orientation": ["Nothing", "2"],
 }
 
+#This file csv file is created by data scraper py
 metadata = pd.read_csv(r"metadata/allen_ISH.csv")
 if len(metadata) == 0:
     raise ValueError("Empty metadata file")
