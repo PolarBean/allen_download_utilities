@@ -19,33 +19,35 @@ NUM_ROWS = 500
 api_data = fetch_data(BASE_URL, CRITERIA, NUM_ROWS)
 print(f"found {len(api_data)} experiments")
 data = {
-    "animal_id":[],
-    "animal_name":[],
-    "experiment_id":[],
-    "sex":[],
-    "gene":[],
-    "age":[],
-    "plane_of_section":[],
-    "treatment":[],
-    "probe_orientation":[],
-    "sleep_state":[]
+    "animal_id": [],
+    "animal_name": [],
+    "experiment_id": [],
+    "sex": [],
+    "gene": [],
+    "age": [],
+    "plane_of_section": [],
+    "treatment": [],
+    "probe_orientation": [],
+    "sleep_state": [],
 }
 
 for row in api_data:
-    animal_id_API = row['specimen_id']
-    animal_name = row['specimen']['name']
-    experiment_id = row['id']
-    sex = row['specimen']['donor']['sex_full_name']
-    age = row['specimen']['donor']['age']['name']
-    sleep_state =  row['specimen']['donor']['sleep_state'] 
-    probe_orientation =  row['probes'][0]['orientation_id'] if  len(row['probes'])!=0 else 'Nothing'
+    animal_id_API = row["specimen_id"]
+    animal_name = row["specimen"]["name"]
+    experiment_id = row["id"]
+    sex = row["specimen"]["donor"]["sex_full_name"]
+    age = row["specimen"]["donor"]["age"]["name"]
+    sleep_state = row["specimen"]["donor"]["sleep_state"]
+    probe_orientation = (
+        row["probes"][0]["orientation_id"] if len(row["probes"]) != 0 else "Nothing"
+    )
     plane_of_section = row["plane_of_section"]["name"]
     if len(row["treatments"]) > 1:
         raise Exception("more than one treatment")
-    if len(row['genes']) > 1:
+    if len(row["genes"]) > 1:
         raise Exception("more than one gene")
     treatment = row["treatments"][0]["name"]
-    gene = row['genes'][0]['acronym'] if  len(row['genes'])!=0 else 'Nothing' 
+    gene = row["genes"][0]["acronym"] if len(row["genes"]) != 0 else "Nothing"
 
     # Replace None with "None"
     animal_id_API = animal_id_API if animal_id_API is not None else "Nothing"
@@ -54,11 +56,12 @@ for row in api_data:
     sex = sex if sex is not None else "Nothing"
     age = age if age is not None else "Nothing"
     sleep_state = sleep_state if sleep_state is not None else "Nothing"
-    probe_orientation = probe_orientation if probe_orientation is not None else "Nothing"
+    probe_orientation = (
+        probe_orientation if probe_orientation is not None else "Nothing"
+    )
     plane_of_section = plane_of_section if plane_of_section is not None else "Nothing"
     treatment = treatment if treatment is not None else "Nothing"
     gene = gene if gene is not None else "Nothing"
-
 
     data["animal_id"].append(animal_id_API)
     data["experiment_id"].append(experiment_id)
@@ -76,4 +79,4 @@ for row in api_data:
 #     print(f"{i}: {len(data[i])}")
 # Convert to DataFrame for further processing
 df = pd.DataFrame(data)
-df.to_csv('metadata/allen_ISH.csv')
+df.to_csv("metadata/allen_ISH.csv")

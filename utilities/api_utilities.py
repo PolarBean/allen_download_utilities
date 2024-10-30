@@ -1,6 +1,7 @@
 import requests
 import time
 
+
 def fetch_data(base_url, criteria, num_rows, max_retries=10):
     start_row = 0
     all_data = []
@@ -22,5 +23,7 @@ def fetch_data(base_url, criteria, num_rows, max_retries=10):
                 retries += 1
                 time.sleep(1)  # Wait for 1 second before retrying
                 if retries == max_retries:
-                    raise Exception(f"Request failed after {max_retries} retries with status code {response.status_code}: {response.text}")
+                    raise Exception(
+                        f"Request failed after {max_retries} retries with status code {response.status_code}: {response.text}"
+                    )
     return all_data
