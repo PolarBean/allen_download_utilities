@@ -1,4 +1,5 @@
 import pandas as pd
+import os
 from utilities.download_utilities import (
     filter_metadata,
     make_experiment_folder,
@@ -29,22 +30,34 @@ if len(metadata) == 0:
 for key, value in FILTER_CRITERIA.items():
     metadata = filter_metadata(metadata, key, value)
 
+#this can be used to see if the files already exist in a specified directory, and if they do skip them.
+out_template = r"/mnt/g/AllenDataalignmentProj/resolutionPixelSizeMetadata/ISH/{}/{}"
+
 for index, row in metadata.iterrows():
-    make_experiment_folder("downloaded_data", row["animal_name"], row["experiment_id"])
+    if row['treatment'] == "NISSL":
+        out_path = out_template.format(row['animal_name'], "NISSL")
+        folder = "NISSL"
+    else:
+        out_path = out_template.format(row['animal_name'], row['experiment_id'])
+        folder = row['experiment_id']
+    if os.path.isdir(out_path):
+        continue
+    make_experiment_folder("downloaded_data", row["animal_name"], folder)
     section_images = get_section_ids(row["experiment_id"])
     for section_image in section_images:
+        if not row['treatment'] == "NISSL":
+            download_image(
+                "downloaded_data",
+                row["animal_name"],
+                folder,
+                section_image["id"],
+                section_image["section_number"],
+                view="expression",
+            )
         download_image(
             "downloaded_data",
             row["animal_name"],
-            row["experiment_id"],
-            section_image["id"],
-            section_image["section_number"],
-            view="expression",
-        )
-        download_image(
-            "downloaded_data",
-            row["animal_name"],
-            row["experiment_id"],
+            folder,
             section_image["id"],
             section_image["section_number"],
             resolution=section_image["resolution"],
