@@ -7,14 +7,14 @@ This requests only
 non failed data [failed$eqfalse]
 coronal and sagittal data (plane_of_section ne 4)
 non transgenic mice only (specimen(donor[transgenic_mouse_id$eqnull]))
-Black 6 only (specimen(donor[strain$eq%27C57BL/6J%27]))
 ISH data only (treatments[name$eq%27ISH%27])
 AntiSense probes only (probes[orientation_id$eq%272%27])
+mice only (specimen(donor(organism[id$eq2])))
 """
 
 
 BASE_URL = "https://mouse.brain-map.org/api/v2/data/query.json"
-CRITERIA = "criteria=model::SectionDataSet,rma::criteria,[plane_of_section_id$ne2],[failed$eqfalse],specimen(donor[transgenic_mouse_id$eqnull]),specimen(donor[disease_categories$eqnull]),specimen(donor[strain$eq%27C57BL/6J%27]),treatments[name$in%27NISSL%27,%27ISH%27]&include=plane_of_section,genes,treatments,specimen(donor(age)),probes,specimen(donor(organism)),specimen(donor(disease_categories))"
+CRITERIA = "criteria=model::SectionDataSet,rma::criteria,[plane_of_section_id$ne2],[failed$eqfalse],specimen(donor[transgenic_mouse_id$eqnull]),specimen(donor[disease_categories$eqnull]),specimen(donor(organism[id$eq2])),treatments[name$in%27NISSL%27,%27ISH%27]&include=plane_of_section,genes,treatments,specimen(donor(age)),probes,specimen(donor(organism)),specimen(donor(disease_categories))"
 NUM_ROWS = 500
 api_data = fetch_data(BASE_URL, CRITERIA, NUM_ROWS)
 print(f"found {len(api_data)} experiments")
